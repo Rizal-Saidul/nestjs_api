@@ -1,20 +1,20 @@
-import { Borrowing } from "src/borrowing/borrowing.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Borrowing } from 'src/borrowing/borrowing.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Book{
-    @PrimaryGeneratedColumn()
-    id: number;
+export class Book {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column()
-    title: string;
+  @Column()
+  title!: string;
 
-    @Column()
-    author: string;
+  @Column()
+  author!: string;
 
-    @Column({default: 0})
-    stock: number;
+  @Column({ default: 0 })
+  stock!: number;
 
-    @OneToMany(() => Borrowing, borrowing => borrowing.book)
-    borrowings: Borrowing[]
+  @OneToMany(() => Borrowing, (borrowing) => borrowing.book)
+  borrowings!: Borrowing[];
 }

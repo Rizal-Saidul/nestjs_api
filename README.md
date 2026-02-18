@@ -1,98 +1,194 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Book Borrowing API (NestJS)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Repositori ini dibuat untuk **belajar** membangun RESTful API menggunakan [NestJS](https://nestjs.com/) dan TypeScript. Bukan untuk kebutuhan produksi.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Fitur Utama
 
-## Description
+- ✅ Registrasi & login user (dengan JWT)
+- ✅ Manajemen buku (tambah, lihat, update stok)
+- ✅ Peminjaman & pengembalian buku
+- ✅ Relasi database dengan TypeORM
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tech Stack
 
-## Project setup
+- **Framework**: [NestJS](https://nestjs.com/)
+- **Language**: TypeScript
+- **Database**: TypeORM
+- **Authentication**: JWT
+- **Testing**: Jest
+
+## Instalasi & Menjalankan Project
 
 ```bash
-$ npm install
-```
+# install dependencies
+npm install
 
-## Compile and run the project
-
-```bash
 # development
-$ npm run start
+npm run start
 
-# watch mode
-$ npm run start:dev
+# watch mode (auto reload)
+npm run start:dev
 
-# production mode
-$ npm run start:prod
+# production
+npm run start:prod
 ```
 
-## Run tests
+## Menjalankan Test
 
 ```bash
 # unit tests
-$ npm run test
+npm run test
 
 # e2e tests
-$ npm run test:e2e
+npm run test:e2e
 
-# test coverage
-$ npm run test:cov
+# coverage report
+npm run test:cov
 ```
 
-## Deployment
+## Struktur Project
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```
+src/
+├── auth/              # Authentication (register, login, JWT)
+├── book/              # Book management
+├── borrowing/         # Borrowing management
+├── user/              # User management
+├── common/            # Guards, middleware, decorators
+└── database/          # Database config
+```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Entity Diagram
 
+### User
+```typescript
+- id: number (Primary Key)
+- name: string
+- email: string (unique)
+- password: string (hashed)
+- borrowings: Borrowing[] (relation)
+```
+
+### Book
+```typescript
+- id: number (Primary Key)
+- title: string
+- author: string
+- stock: number (default: 0)
+- borrowings: Borrowing[] (relation)
+```
+
+### Borrowing
+```typescript
+- id: number (Primary Key)
+- user: User (Foreign Key)
+- book: Book (Foreign Key)
+- borrowed_at: Date
+- returned_at: Date | null
+- isReturned: boolean (default: false)
+```
+
+## API Endpoints
+
+### Auth Routes
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| POST | `/auth/register` | Registrasi user baru |
+| POST | `/auth/login` | Login dan dapatkan JWT token |
+
+### Book Routes
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| POST | `/books` | Tambah buku baru |
+| GET | `/books` | Lihat semua buku |
+| GET | `/books/:id` | Lihat detail buku |
+| PUT | `/books/:id` | Update stok buku |
+
+### Borrowing Routes
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| POST | `/borrowings` | Pinjam buku (require auth) |
+| PATCH | `/borrowings/:id/return` | Kembalikan buku (require auth) |
+
+## Contoh Request & Response
+
+### Register User
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+POST /auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123"
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Login User
+```bash
+POST /auth/login
+Content-Type: application/json
 
-## Resources
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
 
-Check out a few resources that may come in handy when working with NestJS:
+# Response (berisi JWT token)
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### Tambah Buku
+```bash
+POST /books
+Content-Type: application/json
 
-## Support
+{
+  "title": "Clean Code",
+  "author": "Robert C. Martin",
+  "stock": 5
+}
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Pinjam Buku
+```bash
+POST /borrowings
+Authorization: Bearer <JWT_TOKEN>
+Content-Type: application/json
 
-## Stay in touch
+{
+  "bookId": 1,
+  "userId": 1
+}
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Best Practices yang Dipelajari
 
-## License
+- ✅ Modular architecture (Controllers, Services, Modules)
+- ✅ Data validation dengan DTOs
+- ✅ JWT authentication dan guards
+- ✅ Database relationships (One-to-Many, Many-to-One)
+- ✅ Exception handling
+- ✅ Unit testing & E2E testing
+- ✅ Type safety dengan TypeScript
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Notes
+
+- Semua password harus di-hash sebelum disimpan ke database
+- JWT token diperlukan untuk akses endpoint borrowing
+- Stok buku tidak bisa negatif
+- User hanya bisa meminjam buku jika stok tersedia
+- Satu user bisa meminjam buku yang sama hanya 1 kali (sampai dikembalikan)
+
+## Learning Resources
+
+- [NestJS Official Documentation](https://docs.nestjs.com)
+- [TypeORM Documentation](https://typeorm.io)
+- [JWT Authentication](https://jwt.io)
+- [RESTful API Design](https://restfulapi.net)
+
+---
+
+<p align="center">📚 Dibuat untuk latihan belajar NestJS & TypeScript</p>

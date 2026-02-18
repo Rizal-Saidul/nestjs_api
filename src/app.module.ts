@@ -7,20 +7,30 @@ import { UsersModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from 'dotenv';
+import { User } from './user/user.entity';
+import { Book } from './book/book.entity';
+import { Borrowing } from './borrowing/borrowing.entity';
 
-config()
+config();
 
 @Module({
-  imports: [TypeOrmModule.forRoot({
+  imports: [
+    TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
       port: 5432,
-      username: process.env.DB_USERNAME,
+      username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-    }),BooksModule, BorrowingsModule, UsersModule, AuthModule],
+      entities: [User, Book, Borrowing],
+    }),
+    BooksModule,
+    BorrowingsModule,
+    UsersModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,20 +1,20 @@
-import { Borrowing } from "src/borrowing/borrowing.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Borrowing } from 'src/borrowing/borrowing.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class User{
-    @PrimaryGeneratedColumn()
-    id: number;
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column({unique: true})
-    email: string;
+  @Column({ unique: true })
+  email: string;
 
-    @Column()
-    password: string;
+  @Column()
+  password: string;
 
-    @OneToMany(() => Borrowing, borrowing =>  borrowing.user)
-    borrowings: Borrowing[];
+  @OneToMany(() => Borrowing, (borrowing) => borrowing.user)
+  borrowings: Borrowing[];
 }

@@ -1,6 +1,9 @@
-import { IsInt } from "class-validator";
+import { IsInt } from 'class-validator';
 
-export class BorrowBookDto{
-    @IsInt()
-    bookId: number;
+export class BorrowBookDto {
+  @IsInt()
+  bookId!: number;
+
+  @IsInt()
+  userId!: number;
 }
